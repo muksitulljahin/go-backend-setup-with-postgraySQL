@@ -4,8 +4,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/muksitulljahin/go-backend-setup-with-postgraySQL/docs"
 	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/internal/modules/user"
 	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/pkg/response"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/gorm"
 )
 
@@ -41,6 +44,9 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 			"uptime": "active",
 		})
 	})
+
+	// Swagger API Documentation UI
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// API v1 group
 	apiV1 := r.Group("/api/v1")

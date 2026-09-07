@@ -9,6 +9,7 @@ A modular, scalable, production-ready Go backend architecture built with **Gin W
 - **Web Framework:** [Gin](https://github.com/gin-gonic/gin) - Fast & lightweight HTTP web framework.
 - **ORM:** [GORM](https://gorm.io/) with PostgreSQL driver (`gorm.io/driver/postgres`).
 - **Live Reload:** [Air](https://github.com/air-verse/air) (`.air.toml`) for hot reloading during development.
+- **Swagger Documentation:** [Swagger UI](https://github.com/swaggo/gin-swagger) at `/swagger/index.html`.
 - **Modular Architecture:** Clean separation of concerns with **Controller**, **Service**, and **Repository** layers.
 - **Configuration:** Environment variable management via `.env` and `godotenv`.
 - **Graceful Shutdown:** Safe server termination handling `SIGINT` / `SIGTERM`.
@@ -101,11 +102,12 @@ go run main.go
 
 ## 📡 API Endpoints
 
-### Root & Health
+### Root, Health & Swagger Docs
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
 | `GET` | `/` | Root endpoint (`backend running successfully`) |
 | `GET` | `/health` | Server health check |
+| `GET` | `/swagger/index.html` | Interactive Swagger API Documentation UI |
 
 ### User Module (`/api/v1/users`)
 | Method | Endpoint | Description | Payload Example |

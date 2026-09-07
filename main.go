@@ -16,6 +16,20 @@ import (
 	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/internal/routes"
 )
 
+// @title           Go Backend with PostgreSQL & GORM API
+// @version         1.0
+// @description     Production-ready RESTful API server built with Go, Gin, PostgreSQL, and GORM.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name    API Support
+// @contact.email   support@example.com
+
+// @license.name    MIT
+// @license.url     https://opensource.org/licenses/MIT
+
+// @host      localhost:8080
+// @BasePath  /api/v1
+
 func main() {
 	// 1. Load configuration
 	cfg := config.LoadConfig()

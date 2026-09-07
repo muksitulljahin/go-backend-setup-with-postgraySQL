@@ -16,6 +16,17 @@ func NewController(service Service) *Controller {
 	return &Controller{service: service}
 }
 
+// CreateUser godoc
+// @Summary      Create a new user
+// @Description  Create a new user with name and email
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        request body CreateUserRequest true "Create User Request"
+// @Success      201 {object} response.APIResponse{data=User}
+// @Failure      400 {object} response.APIResponse
+// @Failure      500 {object} response.APIResponse
+// @Router       /users [post]
 func (ctrl *Controller) CreateUser(c *gin.Context) {
 	var req CreateUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -36,6 +47,14 @@ func (ctrl *Controller) CreateUser(c *gin.Context) {
 	response.Created(c, "User created successfully", user)
 }
 
+// GetAllUsers godoc
+// @Summary      Get all users
+// @Description  Retrieve a list of all registered users
+// @Tags         users
+// @Produce      json
+// @Success      200 {object} response.APIResponse{data=[]User}
+// @Failure      500 {object} response.APIResponse
+// @Router       /users [get]
 func (ctrl *Controller) GetAllUsers(c *gin.Context) {
 	users, err := ctrl.service.GetAllUsers()
 	if err != nil {
@@ -46,6 +65,17 @@ func (ctrl *Controller) GetAllUsers(c *gin.Context) {
 	response.Success(c, "Users retrieved successfully", users)
 }
 
+// GetUserByID godoc
+// @Summary      Get user by ID
+// @Description  Retrieve single user details by their ID
+// @Tags         users
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Success      200  {object}  response.APIResponse{data=User}
+// @Failure      400  {object}  response.APIResponse
+// @Failure      404  {object}  response.APIResponse
+// @Failure      500  {object}  response.APIResponse
+// @Router       /users/{id} [get]
 func (ctrl *Controller) GetUserByID(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.ParseUint(idParam, 10, 32)
@@ -67,6 +97,19 @@ func (ctrl *Controller) GetUserByID(c *gin.Context) {
 	response.Success(c, "User retrieved successfully", user)
 }
 
+// UpdateUser godoc
+// @Summary      Update user by ID
+// @Description  Update existing user details by ID
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        id       path      int                true  "User ID"
+// @Param        request  body      UpdateUserRequest  true  "Update User Request"
+// @Success      200      {object}  response.APIResponse{data=User}
+// @Failure      400      {object}  response.APIResponse
+// @Failure      404      {object}  response.APIResponse
+// @Failure      500      {object}  response.APIResponse
+// @Router       /users/{id} [put]
 func (ctrl *Controller) UpdateUser(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.ParseUint(idParam, 10, 32)
@@ -98,6 +141,17 @@ func (ctrl *Controller) UpdateUser(c *gin.Context) {
 	response.Success(c, "User updated successfully", user)
 }
 
+// DeleteUser godoc
+// @Summary      Delete user by ID
+// @Description  Remove user from database by ID
+// @Tags         users
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Success      200  {object}  response.APIResponse
+// @Failure      400  {object}  response.APIResponse
+// @Failure      404  {object}  response.APIResponse
+// @Failure      500  {object}  response.APIResponse
+// @Router       /users/{id} [delete]
 func (ctrl *Controller) DeleteUser(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.ParseUint(idParam, 10, 32)
