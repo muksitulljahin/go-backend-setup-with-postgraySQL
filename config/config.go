@@ -7,7 +7,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type Config struct {
+type AppConfig struct {
 	Port        string
 	AppEnv      string
 	DBHost      string
@@ -19,32 +19,25 @@ type Config struct {
 	DBTimeZone  string
 }
 
-var AppConfig *Config
+var Config *AppConfig
 
-func LoadConfig() *Config {
+func LoadConfig() *AppConfig {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println("Note: .env file not found or could not be loaded, using environment variables")
 	}
 
-	AppConfig = &Config{
-		Port:       getEnv("PORT", "8080"),
-		AppEnv:     getEnv("APP_ENV", "development"),
-		DBHost:     getEnv("DB_HOST", "localhost"),
-		DBPort:     getEnv("DB_PORT", "5432"),
-		DBUser:     getEnv("DB_USER", "postgres"),
-		DBPassword: getEnv("DB_PASSWORD", "postgres"),
-		DBName:     getEnv("DB_NAME", "postgres_db"),
-		DBSSLMode:  getEnv("DB_SSLMODE", "disable"),
-		DBTimeZone: getEnv("DB_TIMEZONE", "UTC"),
+	Config = &AppConfig{
+		Port:       os.Getenv("PORT"),
+		AppEnv:     os.Getenv("APP_ENV"),
+		DBHost:     os.Getenv("DB_HOST"),
+		DBPort:     os.Getenv("DB_PORT"),
+		DBUser:     os.Getenv("DB_USER"),
+		DBPassword: os.Getenv("DB_PASSWORD"),
+		DBName:     os.Getenv("DB_NAME"),
+		DBSSLMode:  os.Getenv("DB_SSLMODE"),
+		DBTimeZone: os.Getenv("DB_TIMEZONE"),
 	}
 
-	return AppConfig
-}
-
-func getEnv(key, defaultValue string) string {
-	if value, exists := os.LookupEnv(key); exists && value != "" {
-		return value
-	}
-	return defaultValue
+	return Config
 }
