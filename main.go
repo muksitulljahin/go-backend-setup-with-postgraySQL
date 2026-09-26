@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/config"
-	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/internal/routes"
+	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/api/routes"
 )
 
 // @title           Go Backend with PostgreSQL & GORM API
