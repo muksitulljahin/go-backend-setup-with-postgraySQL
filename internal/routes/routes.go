@@ -38,12 +38,6 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		})
 	})
 
-	// Health check endpoint
-	r.GET("/health", func(c *gin.Context) {
-		response.Success(c, "Health check passed", gin.H{
-			"uptime": "active",
-		})
-	})
 
 	// Swagger API Documentation UI
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
