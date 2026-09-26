@@ -37,16 +37,15 @@ func main() {
 	// 2. Initialize Database Connection (PostgreSQL with GORM)
 	db, err := config.ConnectDatabase(cfg)
 	if err != nil {
-		log.Printf("⚠️ Warning: PostgreSQL database connection failed: %v\n", err)
-		log.Println("Server will still start, but database-dependent endpoints will fail until PostgreSQL is configured properly in .env")
+		log.Fatalf("❌ Database connection failed: %v\nServer will not start until database is ready.", err)
+	}
+
+	// Auto Migration for registered models
+	log.Println("Running AutoMigration for models...")
+	if err := db.AutoMigrate(&user.User{}); err != nil {
+		log.Printf("⚠️ Auto migration warning: %v\n", err)
 	} else {
-		// Auto Migration for registered models
-		log.Println("Running AutoMigration for models...")
-		if err := db.AutoMigrate(&user.User{}); err != nil {
-			log.Printf("⚠️ Auto migration warning: %v\n", err)
-		} else {
-			log.Println("✅ Database migration completed successfully")
-		}
+		log.Println("✅ Database migration completed successfully")
 	}
 
 	// 3. Setup Routes
