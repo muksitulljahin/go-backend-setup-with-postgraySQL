@@ -19,6 +19,8 @@ type AppConfig struct {
 	DBTimeZone      string
 	SwaggerUser     string
 	SwaggerPassword string
+	JWTSecret       string
+	JWTExpiryHours  string
 }
 
 var Config *AppConfig
@@ -48,6 +50,8 @@ func LoadConfig() *AppConfig {
 		DBTimeZone:      getEnv("DB_TIMEZONE", "UTC"),
 		SwaggerUser:     getEnv("SWAGGER_USER", "admin"),
 		SwaggerPassword: getEnv("SWAGGER_PASSWORD", "admin123"),
+		JWTSecret:       getEnv("JWT_SECRET", "super_secret_jwt_key_123"),
+		JWTExpiryHours:  getEnv("JWT_EXPIRATION_HOURS", "24"),
 	}
 
 	return Config
