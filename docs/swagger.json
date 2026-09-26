@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "Production-ready RESTful API server built with Go, Gin, PostgreSQL, and GORM.",
+       
         "title": "Go Backend with PostgreSQL \u0026 GORM API",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {

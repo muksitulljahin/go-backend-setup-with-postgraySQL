@@ -15,6 +15,7 @@ import (
 	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/api/routes"
 	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/config"
 )
+
 func getLocalIP() string {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
