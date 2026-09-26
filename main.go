@@ -53,7 +53,7 @@ func main() {
 	// 2. Initialize Database Connection (PostgreSQL with GORM)
 	db, err := config.ConnectDatabase(cfg)
 	if err != nil {
-		log.Fatalf("❌ Database connection failed: %v\nServer will not start until database is ready.", err)
+		log.Printf("❌ Database connection failed: %v\nServer will not start until database is ready.", err)
 	}
 
 	// 3. Setup Routes
