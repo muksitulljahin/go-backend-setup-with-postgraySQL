@@ -40,7 +40,7 @@ func main() {
 		log.Printf("❌ Database connection failed: %v\nServer will not start until database is ready.", err)
 	}
 	// 3. Setup Routes
-	r := routes.SetupRouter(db)
+	r := routes.SetupRouter(db, cfg)
 
 	// 4. Configure HTTP Server
 	serverAddr := fmt.Sprintf(":%s", cfg.Port)

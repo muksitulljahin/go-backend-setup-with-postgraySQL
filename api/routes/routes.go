@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/config"
 	_ "github.com/muksitulljahin/go-backend-setup-with-postgraySQL/docs"
 	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/response"
 	swaggerFiles "github.com/swaggo/files"
@@ -11,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func SetupRouter(db *gorm.DB) *gin.Engine {
+func SetupRouter(db *gorm.DB, cfg *config.AppConfig) *gin.Engine {
 	r := gin.Default()
 
 	// CORS Middleware
@@ -29,12 +31,9 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		c.Next()
 	})
 
-	// Root Route
+	// Root Route for fake message but still working
 	r.GET("/", func(c *gin.Context) {
-		response.Success(c, "backend running successfully", gin.H{
-			"status":  "OK",
-			"version": "1.0.0",
-		})
+		response.Error(c, http.StatusInternalServerError, "Internal Server Error", nil)
 	})
 
 	// Health check endpoint
@@ -44,8 +43,14 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		})
 	})
 
-	// Swagger API Documentation UI
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// Swagger API Documentation UI (Protected with Basic Auth)
+	swaggerGroup := r.Group("/swagger")
+	if cfg != nil && cfg.SwaggerUser != "" && cfg.SwaggerPassword != "" {
+		swaggerGroup.Use(gin.BasicAuth(gin.Accounts{
+			cfg.SwaggerUser: cfg.SwaggerPassword,
+		}))
+	}
+	swaggerGroup.GET("/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// API v1 group (Add your new feature modules here!)
 	apiV1 := r.Group("/api/v1")
