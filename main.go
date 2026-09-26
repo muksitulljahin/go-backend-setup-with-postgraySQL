@@ -15,22 +15,6 @@ import (
 	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/api/routes"
 	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/config"
 )
-
-// @title           Go Backend with PostgreSQL & GORM API
-// @version         1.0
-// @description     Production-ready RESTful API server built with Go, Gin, PostgreSQL, and GORM.
-// @termsOfService  http://swagger.io/terms/
-
-// @contact.name    API Support
-// @contact.email   support@example.com
-
-// @license.name    MIT
-// @license.url     https://opensource.org/licenses/MIT
-
-// @host      localhost:8080
-// @BasePath  /api/v1
-
-// getLocalIP returns the non-loopback IPv4 address of the local machine
 func getLocalIP() string {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
@@ -55,7 +39,6 @@ func main() {
 	if err != nil {
 		log.Printf("❌ Database connection failed: %v\nServer will not start until database is ready.", err)
 	}
-
 	// 3. Setup Routes
 	r := routes.SetupRouter(db)
 
@@ -78,6 +61,8 @@ func main() {
 		if localIP != "" && localIP != "127.0.0.1" {
 			log.Printf("🌐 Network: http://%s:%s/\n", localIP, cfg.Port)
 		}
+		log.Printf("📚 Local Swagger: http://localhost:%s/swagger/index.html\n", cfg.Port)
+		log.Printf("📚 Network Swagger: http://%s:%s/swagger/index.html\n", localIP, cfg.Port)
 		log.Println("--------------------------------------------------")
 
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
