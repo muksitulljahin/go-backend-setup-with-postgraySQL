@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/muksitulljahin/go-backend-setup-with-postgraySQL/docs"
-	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/pkg/response"
+	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/response"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/gorm"
