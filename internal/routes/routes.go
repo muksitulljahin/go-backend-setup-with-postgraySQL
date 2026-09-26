@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/muksitulljahin/go-backend-setup-with-postgraySQL/docs"
-	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/internal/modules/user"
 	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/pkg/response"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -38,14 +37,21 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		})
 	})
 
+	// Health check endpoint
+	r.GET("/health", func(c *gin.Context) {
+		response.Success(c, "Health check passed", gin.H{
+			"status": "UP",
+		})
+	})
 
 	// Swagger API Documentation UI
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// API v1 group
+	// API v1 group (Add your new feature modules here!)
 	apiV1 := r.Group("/api/v1")
 	{
-		user.RegisterRoutes(apiV1, db)
+		_ = apiV1
+		// Example: product.RegisterRoutes(apiV1, db)
 	}
 
 	return r

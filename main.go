@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/config"
-	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/internal/modules/user"
 	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/internal/routes"
 )
 
@@ -41,12 +40,12 @@ func main() {
 	}
 
 	// Auto Migration for registered models
-	log.Println("Running AutoMigration for models...")
-	if err := db.AutoMigrate(&user.User{}); err != nil {
-		log.Printf("⚠️ Auto migration warning: %v\n", err)
-	} else {
-		log.Println("✅ Database migration completed successfully")
-	}
+	// log.Println("Running AutoMigration for models...")
+	// if err := db.AutoMigrate(&user.User{}); err != nil {
+	// 	log.Printf("⚠️ Auto migration warning: %v\n", err)
+	// } else {
+	// 	log.Println("✅ Database migration completed successfully")
+	// }
 
 	// 3. Setup Routes
 	r := routes.SetupRouter(db)
