@@ -21,6 +21,13 @@ type AppConfig struct {
 
 var Config *AppConfig
 
+func getEnv(key, fallback string) string {
+	if value, exists := os.LookupEnv(key); exists && value != "" {
+		return value
+	}
+	return fallback
+}
+
 func LoadConfig() *AppConfig {
 	err := godotenv.Load()
 	if err != nil {
@@ -28,16 +35,17 @@ func LoadConfig() *AppConfig {
 	}
 
 	Config = &AppConfig{
-		Port:       os.Getenv("PORT"),
-		AppEnv:     os.Getenv("APP_ENV"),
-		DBHost:     os.Getenv("DB_HOST"),
-		DBPort:     os.Getenv("DB_PORT"),
-		DBUser:     os.Getenv("DB_USER"),
-		DBPassword: os.Getenv("DB_PASSWORD"),
-		DBName:     os.Getenv("DB_NAME"),
-		DBSSLMode:  os.Getenv("DB_SSLMODE"),
-		DBTimeZone: os.Getenv("DB_TIMEZONE"),
+		Port:       getEnv("PORT", "8080"),
+		AppEnv:     getEnv("APP_ENV", "development"),
+		DBHost:     getEnv("DB_HOST", "localhost"),
+		DBPort:     getEnv("DB_PORT", "5432"),
+		DBUser:     getEnv("DB_USER", "postgres"),
+		DBPassword: getEnv("DB_PASSWORD", "postgres"),
+		DBName:     getEnv("DB_NAME", "postgres_db"),
+		DBSSLMode:  getEnv("DB_SSLMODE", "disable"),
+		DBTimeZone: getEnv("DB_TIMEZONE", "UTC"),
 	}
 
 	return Config
 }
+
