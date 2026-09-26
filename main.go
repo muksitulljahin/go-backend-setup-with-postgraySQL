@@ -5,14 +5,15 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/config"
 	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/api/routes"
+	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/config"
 )
 
 // @title           Go Backend with PostgreSQL & GORM API
@@ -29,6 +30,22 @@ import (
 // @host      localhost:8080
 // @BasePath  /api/v1
 
+// getLocalIP returns the non-loopback IPv4 address of the local machine
+func getLocalIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+	for _, address := range addrs {
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+	return ""
+}
+
 func main() {
 	// 1. Load configuration
 	cfg := config.LoadConfig()
@@ -38,14 +55,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("❌ Database connection failed: %v\nServer will not start until database is ready.", err)
 	}
-
-	// Auto Migration for registered models
-	// log.Println("Running AutoMigration for models...")
-	// if err := db.AutoMigrate(&user.User{}); err != nil {
-	// 	log.Printf("⚠️ Auto migration warning: %v\n", err)
-	// } else {
-	// 	log.Println("✅ Database migration completed successfully")
-	// }
 
 	// 3. Setup Routes
 	r := routes.SetupRouter(db)
@@ -62,7 +71,15 @@ func main() {
 
 	// 5. Start Server in a Goroutine
 	go func() {
-		log.Printf("🚀 Server is running on port %s (http://localhost:%s/)\n", cfg.Port, cfg.Port)
+		localIP := getLocalIP()
+		log.Println("--------------------------------------------------")
+		log.Println("🚀 Server is running successfully!")
+		log.Printf("🏡 Local:   http://localhost:%s/\n", cfg.Port)
+		if localIP != "" && localIP != "127.0.0.1" {
+			log.Printf("🌐 Network: http://%s:%s/\n", localIP, cfg.Port)
+		}
+		log.Println("--------------------------------------------------")
+
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("❌ Server failed to start: %v\n", err)
 		}
