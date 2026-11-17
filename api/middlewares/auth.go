@@ -4,9 +4,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-
-	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/pkg/jwt"
-	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/response"
+	"github.com/go-backend-setup-with-postgray/pkg/jwt"
+	"github.com/go-backend-setup-with-postgray/response"
 )
 
 // JWTAuthMiddleware verifies Bearer tokens on protected routes
@@ -40,5 +39,34 @@ func JWTAuthMiddleware(secret string) gin.HandlerFunc {
 		c.Set("userRole", claims.Role)
 
 		c.Next()
+	}
+}
+
+// RequireRoles verifies if the authenticated user has one of the allowed roles
+func RequireRoles(allowedRoles ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		roleVal, exists := c.Get("userRole")
+		if !exists {
+			response.Unauthorized(c, "Authentication required")
+			c.Abort()
+			return
+		}
+
+		userRole, ok := roleVal.(string)
+		if !ok {
+			response.Forbidden(c, "Invalid user role format")
+			c.Abort()
+			return
+		}
+
+		for _, allowed := range allowedRoles {
+			if strings.EqualFold(userRole, allowed) {
+				c.Next()
+				return
+			}
+		}
+
+		response.Forbidden(c, "Access denied: insufficient permissions for this resource")
+		c.Abort()
 	}
 }

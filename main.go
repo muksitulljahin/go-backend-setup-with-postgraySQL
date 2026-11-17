@@ -5,31 +5,25 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/api/routes"
-	"github.com/muksitulljahin/go-backend-setup-with-postgraySQL/config"
+	"github.com/go-backend-setup-with-postgray/api/routes"
+	"github.com/go-backend-setup-with-postgray/config"
 )
 
-func getLocalIP() string {
-	addrs, err := net.InterfaceAddrs()
-	if err != nil {
-		return ""
-	}
-	for _, address := range addrs {
-		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			if ipnet.IP.To4() != nil {
-				return ipnet.IP.String()
-			}
-		}
-	}
-	return ""
-}
+// @title GO Lang Backend With GIn
+// @version 1.0
+// @description Project Backend Set
+// @BasePath /
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token (e.g. "Bearer eyJhbGciOi...")
 
 func main() {
 	// 1. Load configuration
@@ -37,14 +31,14 @@ func main() {
 
 	// 2. Initialize Database Connection (PostgreSQL with GORM)
 	db, err := config.ConnectDatabase(cfg)
-	if err != nil {
-		log.Printf("❌ Database connection failed: %v\nServer will not start until database is ready.", err)
-	}
+
 	// 3. Setup Routes
 	r := routes.SetupRouter(db, cfg)
 
 	// 4. Configure HTTP Server
-	serverAddr := fmt.Sprintf(":%s", cfg.Port)
+	port := cfg.Port
+
+	serverAddr := fmt.Sprintf(":%s", port)
 	srv := &http.Server{
 		Addr:         serverAddr,
 		Handler:      r,
@@ -53,21 +47,28 @@ func main() {
 		IdleTimeout:  60 * time.Second,
 	}
 
-	// 5. Start Server in a Goroutine
+	localIP := config.GetLocalIP()
+
 	go func() {
-		localIP := getLocalIP()
 		log.Println("--------------------------------------------------")
-		log.Println("🚀 Server is running successfully!")
-		log.Printf("🏡 Local:   http://localhost:%s/\n", cfg.Port)
-		if localIP != "" && localIP != "127.0.0.1" {
-			log.Printf("🌐 Network: http://%s:%s/\n", localIP, cfg.Port)
+		if err == nil {
+			log.Println("🚀 Server is running successfully and Database is connected!")
+			log.Printf("Local:   http://localhost:%s/\n", port)
+			if localIP != "" {
+				log.Printf("Network: http://%s:%s/\n", localIP, port)
+			}
+			log.Printf("Local Swagger:   http://localhost:%s/swagger/index.html\n", port)
+			if localIP != "" {
+				log.Printf("Network Swagger: http://%s:%s/swagger/index.html\n", localIP, port)
+			}
+		} else {
+			log.Printf("Oops: Database connection failed: %v\n", err)
+			log.Println("Server will not be accessible properly until database is ready. Please check your .env configuration.")
 		}
-		log.Printf("📚 Local Swagger: http://localhost:%s/swagger/index.html\n", cfg.Port)
-		log.Printf("📚 Network Swagger: http://%s:%s/swagger/index.html\n", localIP, cfg.Port)
 		log.Println("--------------------------------------------------")
 
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatalf("❌ Server failed to start: %v\n", err)
+			log.Fatalf("Server failed to start: %v\n", err)
 		}
 	}()
 

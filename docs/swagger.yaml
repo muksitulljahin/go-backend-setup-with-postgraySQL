@@ -1,227 +1,2476 @@
-basePath: /api/v1
+basePath: /
 definitions:
+  admin.AdminLoginDTO:
+    properties:
+      emailOrPhone:
+        example: muksitul44@gmail.com
+        type: string
+      password:
+        example: "123456"
+        type: string
+    required:
+      - emailOrPhone
+      - password
+    type: object
+  admin.AdminLoginResponseDTO:
+    properties:
+      admin:
+        $ref: "#/definitions/admin.AdminResponseDTO"
+      token:
+        type: string
+    type: object
+  admin.AdminResponseDTO:
+    properties:
+      address:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      id:
+        type: integer
+      lastName:
+        type: string
+      phoneNumber:
+        type: string
+      role:
+        $ref: "#/definitions/role.Type"
+    type: object
+  admin.CreateAdminDTO:
+    properties:
+      address:
+        example: Kishoreganj
+        type: string
+      email:
+        example: muksitul44@gmail.com
+        type: string
+      firstName:
+        example: Muksitul
+        type: string
+      lastName:
+        example: Islam
+        type: string
+      password:
+        example: "123456"
+        minLength: 6
+        type: string
+      phoneNumber:
+        example: "01617182171"
+        type: string
+      role:
+        allOf:
+          - $ref: "#/definitions/role.Type"
+        example: super_admin
+    required:
+      - email
+      - firstName
+      - lastName
+      - password
+      - phoneNumber
+      - role
+    type: object
+  client.ChangePasswordDTO:
+    properties:
+      newPassword:
+        example: newsecret123
+        minLength: 6
+        type: string
+      oldPassword:
+        example: "123456"
+        type: string
+    required:
+      - newPassword
+      - oldPassword
+    type: object
+  client.ClientLoginDTO:
+    properties:
+      emailOrPhone:
+        example: "01712345678"
+        type: string
+      password:
+        example: "123456"
+        type: string
+    required:
+      - emailOrPhone
+      - password
+    type: object
+  client.ClientLoginResponseDTO:
+    properties:
+      client:
+        $ref: "#/definitions/client.ClientResponseDTO"
+      token:
+        type: string
+    type: object
+  client.ClientRegisterDTO:
+    properties:
+      address:
+        example: House 14, Road 5, Block C
+        type: string
+      area:
+        example: Mirpur 10
+        type: string
+      district:
+        example: Dhaka
+        type: string
+      division:
+        example: Dhaka
+        type: string
+      email:
+        example: rahim@example.com
+        type: string
+      firstName:
+        example: Rahim
+        type: string
+      lastName:
+        example: Uddin
+        type: string
+      password:
+        example: "123456"
+        minLength: 6
+        type: string
+      phoneNumber:
+        example: "01712345678"
+        type: string
+      postOffice:
+        example: Mirpur
+        type: string
+      profileImage:
+        example: https://example.com/avatar.jpg
+        type: string
+      referenceCode:
+        example: REF9876
+        type: string
+      thana:
+        example: Mirpur
+        type: string
+      zipCode:
+        example: "1216"
+        type: string
+    required:
+      - firstName
+      - lastName
+      - password
+    type: object
+  client.ClientResponseDTO:
+    properties:
+      address:
+        example: House 14, Road 5, Block C
+        type: string
+      area:
+        example: Mirpur 10
+        type: string
+      createdAt:
+        type: string
+      district:
+        example: Dhaka
+        type: string
+      division:
+        example: Dhaka
+        type: string
+      email:
+        example: rahim@example.com
+        type: string
+      firstName:
+        example: Rahim
+        type: string
+      id:
+        example: 1
+        type: integer
+      isActive:
+        example: true
+        type: boolean
+      lastName:
+        example: Uddin
+        type: string
+      phoneNumber:
+        example: "01712345678"
+        type: string
+      postOffice:
+        example: Mirpur
+        type: string
+      profileImage:
+        example: https://example.com/avatar.jpg
+        type: string
+      referenceCode:
+        example: REF9876
+        type: string
+      role:
+        allOf:
+          - $ref: "#/definitions/role.Type"
+        example: client
+      thana:
+        example: Mirpur
+        type: string
+      updatedAt:
+        type: string
+      zipCode:
+        example: "1216"
+        type: string
+    type: object
+  client.ForgotPasswordDTO:
+    properties:
+      emailOrPhone:
+        example: "01712345678"
+        type: string
+    required:
+      - emailOrPhone
+    type: object
+  client.ResetPasswordDTO:
+    properties:
+      emailOrPhone:
+        example: "01712345678"
+        type: string
+      newPassword:
+        example: newsecret123
+        minLength: 6
+        type: string
+    required:
+      - emailOrPhone
+      - newPassword
+    type: object
+  client.UpdateClientDTO:
+    properties:
+      address:
+        example: Road 103, House 25
+        type: string
+      area:
+        example: Gulshan 2
+        type: string
+      district:
+        example: Dhaka
+        type: string
+      division:
+        example: Dhaka
+        type: string
+      email:
+        example: rahim.new@example.com
+        type: string
+      firstName:
+        example: Rahim
+        type: string
+      isActive:
+        example: true
+        type: boolean
+      lastName:
+        example: Chowdhury
+        type: string
+      phoneNumber:
+        example: "01712345678"
+        type: string
+      postOffice:
+        example: Gulshan
+        type: string
+      profileImage:
+        example: https://example.com/avatar_new.jpg
+        type: string
+      referenceCode:
+        example: REF9876
+        type: string
+      thana:
+        example: Gulshan
+        type: string
+      zipCode:
+        example: "1212"
+        type: string
+    type: object
+  colors.ColorResponseDTO:
+    properties:
+      colorCode:
+        example: "#FF0000"
+        type: string
+      createdAt:
+        type: string
+      id:
+        example: 65287f33a105f9cb2467d12a
+        type: string
+      isActive:
+        example: true
+        type: boolean
+      name:
+        example: Red
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  colors.CreateColorDTO:
+    properties:
+      colorCode:
+        example: "#FF0000"
+        type: string
+      isActive:
+        example: true
+        type: boolean
+      name:
+        example: Red
+        type: string
+    required:
+      - colorCode
+      - name
+    type: object
+  colors.UpdateColorDTO:
+    properties:
+      colorCode:
+        example: "#8B0000"
+        type: string
+      isActive:
+        example: true
+        type: boolean
+      name:
+        example: Dark Red
+        type: string
+    type: object
+  imagecollection.CreateBulkImagesDTO:
+    properties:
+      contentId:
+        example: 65287f33a105f9cb2467d12b
+        type: string
+      contentType:
+        example: product_item
+        type: string
+      imageUrls:
+        example:
+          - https://example.com/img1.jpg
+        items:
+          type: string
+        minItems: 1
+        type: array
+    required:
+      - contentId
+      - contentType
+      - imageUrls
+    type: object
+  imagecollection.CreateImageDTO:
+    properties:
+      contentId:
+        example: 65287f33a105f9cb2467d12b
+        type: string
+      contentType:
+        example: user
+        type: string
+      imageUrl:
+        example: https://example.com/images/avatar.jpg
+        type: string
+      isPrimary:
+        example: true
+        type: boolean
+      sortOrder:
+        example: 0
+        type: integer
+    required:
+      - contentId
+      - contentType
+      - imageUrl
+    type: object
+  imagecollection.ImageResponseDTO:
+    properties:
+      contentId:
+        example: 65287f33a105f9cb2467d12b
+        type: string
+      contentType:
+        example: user
+        type: string
+      createdAt:
+        type: string
+      id:
+        example: 670c5e7b8a1c9f2d3e4b5a6c
+        type: string
+      imageUrl:
+        example: https://example.com/images/avatar.jpg
+        type: string
+      isPrimary:
+        example: true
+        type: boolean
+      sortOrder:
+        example: 0
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  imagecollection.UpdateImageDTO:
+    properties:
+      contentType:
+        example: user
+        type: string
+      imageUrl:
+        example: https://example.com/images/updated-avatar.jpg
+        type: string
+      isPrimary:
+        example: true
+        type: boolean
+      sortOrder:
+        example: 1
+        type: integer
+    type: object
+  imagecollection.UpsertSingleImageDTO:
+    properties:
+      contentType:
+        example: user
+        type: string
+      imageUrl:
+        example: https://example.com/images/avatar.jpg
+        type: string
+    required:
+      - contentType
+      - imageUrl
+    type: object
+  product.CategoryResponseDTO:
+    properties:
+      browseName:
+        example: Raw & Roasted Nuts
+        type: string
+      createdAt:
+        type: string
+      description:
+        example: All kinds of premium nuts, seeds and dried fruits
+        type: string
+      id:
+        example: 65287f33a105f9cb2467d12a
+        type: string
+      isActive:
+        example: true
+        type: boolean
+      name:
+        example: Nuts & Seeds
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  product.CreateCategoryDTO:
+    properties:
+      browseName:
+        example: Raw & Roasted Nuts
+        type: string
+      description:
+        example: All kinds of premium nuts, seeds and dried fruits
+        type: string
+      isActive:
+        example: true
+        type: boolean
+      name:
+        example: Nuts & Seeds
+        type: string
+    required:
+      - name
+    type: object
+  product.UpdateCategoryDTO:
+    properties:
+      browseName:
+        example: Fresh Organic Nuts
+        type: string
+      description:
+        example: Freshly harvested premium organic nuts
+        type: string
+      isActive:
+        example: true
+        type: boolean
+      name:
+        example: Organic Nuts & Seeds
+        type: string
+    type: object
+  productitems.ProductItemColorResponseDTO:
+    properties:
+      colorCode:
+        example: "#FF0000"
+        type: string
+      colorId:
+        example: 65287f33a105f9cb2467d12a
+        type: string
+      id:
+        example: 65287f33a105f9cb2467d12a
+        type: string
+      isActive:
+        example: true
+        type: boolean
+      name:
+        example: Red
+        type: string
+      stock:
+        example: 10
+        type: integer
+    type: object
+  productitems.ProductItemResponseDTO:
+    properties:
+      basePrice:
+        example: 18.99
+        type: number
+      category:
+        $ref: "#/definitions/product.CategoryResponseDTO"
+      categoryId:
+        example: 65287f33a105f9cb2467d12a
+        type: string
+      colorStocks:
+        items:
+          $ref: "#/definitions/productitems.ProductItemColorResponseDTO"
+        type: array
+      colors:
+        items:
+          $ref: "#/definitions/productitems.ProductItemColorResponseDTO"
+        type: array
+      createdAt:
+        type: string
+      description:
+        example: Freshly harvested premium California almonds
+        type: string
+      id:
+        example: 65287f33a105f9cb2467d12b
+        type: string
+      images:
+        items:
+          $ref: "#/definitions/imagecollection.ImageResponseDTO"
+        type: array
+      isActive:
+        example: true
+        type: boolean
+      name:
+        example: California Almonds 500g
+        type: string
+      offerPrice:
+        example: 14.99
+        type: number
+      sizes:
+        items:
+          $ref: "#/definitions/productitems.ProductItemSizeResponseDTO"
+        type: array
+      stock:
+        example: 100
+        type: integer
+      updatedAt:
+        type: string
+      variants:
+        items:
+          $ref: "#/definitions/productitems.ProductItemVariantResponseDTO"
+        type: array
+    type: object
+  productitems.ProductItemSizeResponseDTO:
+    properties:
+      code:
+        example: M
+        type: string
+      id:
+        example: 65287f33a105f9cb2467d12a
+        type: string
+      isActive:
+        example: true
+        type: boolean
+      name:
+        example: Medium
+        type: string
+      sizeId:
+        example: 65287f33a105f9cb2467d12a
+        type: string
+      sortOrder:
+        example: 1
+        type: integer
+      stock:
+        example: 10
+        type: integer
+    type: object
+  productitems.ProductItemVariantResponseDTO:
+    properties:
+      color:
+        $ref: "#/definitions/colors.ColorResponseDTO"
+      colorId:
+        type: string
+      id:
+        type: string
+      size:
+        $ref: "#/definitions/sizes.SizeResponseDTO"
+      sizeId:
+        type: string
+      stock:
+        type: integer
+    type: object
   response.APIResponse:
     properties:
       data: {}
       error: {}
       message:
         type: string
+      meta:
+        $ref: "#/definitions/response.PaginationMeta"
+      statusCode:
+        type: integer
       success:
         type: boolean
     type: object
-  user.CreateUserRequest:
+  response.PaginationMeta:
     properties:
-      email:
-        type: string
-      name:
-        maxLength: 100
-        minLength: 2
-        type: string
-    required:
-    - email
-    - name
+      limit:
+        type: integer
+      page:
+        type: integer
+      total:
+        type: integer
+      totalPage:
+        type: integer
     type: object
-  user.UpdateUserRequest:
+  role.Type:
+    enum:
+      - super_admin
+      - admin
+      - support
+      - client
+    type: string
+    x-enum-varnames:
+      - SuperAdmin
+      - Admin
+      - Support
+      - Client
+  sizes.SizeResponseDTO:
     properties:
-      email:
+      code:
+        example: M
         type: string
-      name:
-        maxLength: 100
-        minLength: 2
-        type: string
-    type: object
-  user.User:
-    properties:
-      created_at:
-        type: string
-      email:
+      createdAt:
         type: string
       id:
-        type: integer
-      name:
+        example: 65287f33a105f9cb2467d12a
         type: string
-      updated_at:
+      isActive:
+        example: true
+        type: boolean
+      name:
+        example: Medium
+        type: string
+      sortOrder:
+        example: 1
+        type: integer
+      updatedAt:
         type: string
     type: object
-host: localhost:8080
 info:
-  contact:
-    email: support@example.com
-    name: API Support
-  description: Production-ready RESTful API server built with Go, Gin, PostgreSQL,
-    and GORM.
-  license:
-    name: MIT
-    url: https://opensource.org/licenses/MIT
-  termsOfService: http://swagger.io/terms/
-  title: Go Backend with PostgreSQL & GORM API
+  contact: {}
+  description: Project Backend Set
+  title: GO Lang Backend With GIn
   version: "1.0"
 paths:
-  /users:
-    get:
-      description: Retrieve a list of all registered users
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/response.APIResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/user.User'
-                  type: array
-              type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/response.APIResponse'
-      summary: Get all users
-      tags:
-      - users
+  /api/v1/colors:
     post:
       consumes:
-      - application/json
-      description: Create a new user with name and email
+        - application/json
+      description: Only Admin and Super Admin can create colors
       parameters:
-      - description: Create User Request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/user.CreateUserRequest'
+        - description: Color Creation Payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/colors.CreateColorDTO"
       produces:
-      - application/json
+        - application/json
       responses:
         "201":
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/response.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/user.User'
-              type: object
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/colors.ColorResponseDTO"
+                type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/response.APIResponse'
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "409":
+          description: Conflict
+          schema:
+            $ref: "#/definitions/response.APIResponse"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/response.APIResponse'
-      summary: Create a new user
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Create Product Color
       tags:
-      - users
-  /users/{id}:
+        - Colors
+  /api/v1/colors/{id}:
     delete:
-      description: Remove user from database by ID
+      description: Only Admin and Super Admin can delete colors
       parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
+        - description: Color ID (MongoDB-style ObjectID)
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.APIResponse'
+            $ref: "#/definitions/response.APIResponse"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/response.APIResponse'
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/response.APIResponse'
+            $ref: "#/definitions/response.APIResponse"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/response.APIResponse'
-      summary: Delete user by ID
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Delete Product Color
       tags:
-      - users
+        - Colors
     get:
-      description: Retrieve single user details by their ID
+      description: Only Admin and Super Admin can retrieve a single color by its ID
       parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
+        - description: Color ID (MongoDB-style ObjectID)
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/user.User'
-              type: object
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/colors.ColorResponseDTO"
+                type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/response.APIResponse'
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/response.APIResponse'
+            $ref: "#/definitions/response.APIResponse"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/response.APIResponse'
-      summary: Get user by ID
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Get Product Color by ID
       tags:
-      - users
+        - Colors
     put:
       consumes:
-      - application/json
-      description: Update existing user details by ID
+        - application/json
+      description: Only Admin and Super Admin can update colors
       parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update User Request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/user.UpdateUserRequest'
+        - description: Color ID (MongoDB-style ObjectID)
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Color Update Payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/colors.UpdateColorDTO"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/response.APIResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/user.User'
-              type: object
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/colors.ColorResponseDTO"
+                type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/response.APIResponse'
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/response.APIResponse'
+            $ref: "#/definitions/response.APIResponse"
+        "409":
+          description: Conflict
+          schema:
+            $ref: "#/definitions/response.APIResponse"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/response.APIResponse'
-      summary: Update user by ID
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Update Product Color
       tags:
-      - users
+        - Colors
+  /api/v1/colors/list:
+    get:
+      description: Only Admin and Super Admin can retrieve list of all colors
+      parameters:
+        - description: Search colors by name or color code
+          in: query
+          name: search
+          type: string
+        - description: Filter colors by active status (true/false)
+          in: query
+          name: isActive
+          type: boolean
+        - description: Page number (defaults to 1)
+          in: query
+          name: page
+          type: integer
+        - description: Items per page (defaults to 0 / all)
+          in: query
+          name: limit
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    properties:
+                      list:
+                        items:
+                          $ref: "#/definitions/colors.ColorResponseDTO"
+                        type: array
+                      total_count:
+                        type: integer
+                    type: object
+                type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Get All Product Colors
+      tags:
+        - Colors
+  /api/v1/images:
+    post:
+      consumes:
+        - application/json
+      description:
+        Associate an image URL with any content ID (User, Admin, ProductItem,
+        Category)
+      parameters:
+        - description: Create Image Payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/imagecollection.CreateImageDTO"
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/imagecollection.ImageResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Add Single Image to Content
+      tags:
+        - Image Collection
+  /api/v1/images/{id}:
+    delete:
+      description: Delete a specific image entry by its ID (Admin and SuperAdmin)
+      parameters:
+        - description: Image ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Delete Image by ID
+      tags:
+        - Image Collection
+    put:
+      consumes:
+        - application/json
+      description: Update an existing image record (URL, sort order, primary status)
+      parameters:
+        - description: Image ID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Update Image Payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/imagecollection.UpdateImageDTO"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/imagecollection.ImageResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Update Image by ID
+      tags:
+        - Image Collection
+  /api/v1/images/bulk:
+    post:
+      consumes:
+        - application/json
+      description: Associate an array of image URLs with a content ID (Admin and SuperAdmin)
+      parameters:
+        - description: Bulk Images Payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/imagecollection.CreateBulkImagesDTO"
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    items:
+                      $ref: "#/definitions/imagecollection.ImageResponseDTO"
+                    type: array
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Add Multiple Images to Content
+      tags:
+        - Image Collection
+  /api/v1/images/content/{contentId}:
+    get:
+      description:
+        Retrieve all image URLs associated with a content ID (supports
+        ?contentType= filter)
+      parameters:
+        - description: Content ID (e.g. User ID, Product Item ID)
+          in: path
+          name: contentId
+          required: true
+          type: string
+        - description: Filter by Content Type (e.g. user, admin, product_item)
+          in: query
+          name: contentType
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    items:
+                      $ref: "#/definitions/imagecollection.ImageResponseDTO"
+                    type: array
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      summary: Get Images by Content ID
+      tags:
+        - Image Collection
+    put:
+      consumes:
+        - application/json
+      description:
+        Set or update single image for any content (User avatar, Admin
+        avatar, Category banner)
+      parameters:
+        - description: Content ID (e.g. User ID, Admin ID, Category ID)
+          in: path
+          name: contentId
+          required: true
+          type: string
+        - description: Upsert Image Payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/imagecollection.UpsertSingleImageDTO"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/imagecollection.ImageResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Set or Update Single Image (Avatar/Banner)
+      tags:
+        - Image Collection
+  /api/v1/images/upload:
+    post:
+      consumes:
+        - multipart/form-data
+      description:
+        Upload a multipart file to Cloudflare R2 bucket, then store the
+        resulting URL in ImageCollection
+      parameters:
+        - description: Image File to upload
+          in: formData
+          name: file
+          required: true
+          type: file
+        - description: Content ID (e.g. ProductItem ID, User ID, Category ID)
+          in: formData
+          name: contentId
+          required: true
+          type: string
+        - description: Content Type (product_item, user, admin, category)
+          in: formData
+          name: contentType
+          required: true
+          type: string
+        - description: Mark as Primary Image
+          in: formData
+          name: isPrimary
+          type: boolean
+        - description: Display Sort Order
+          in: formData
+          name: sortOrder
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/imagecollection.ImageResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Upload Single Image to Cloudflare R2 and Save to DB
+      tags:
+        - Image Collection
+  /api/v1/images/upload/bulk:
+    post:
+      consumes:
+        - multipart/form-data
+      description:
+        Upload multiple multipart files to Cloudflare R2 bucket and store
+        all resulting URLs in ImageCollection
+      parameters:
+        - description: "Multiple Image Files (field name: 'files')"
+          in: formData
+          name: files
+          required: true
+          type: file
+        - description: Content ID (e.g. ProductItem ID)
+          in: formData
+          name: contentId
+          required: true
+          type: string
+        - description: Content Type (product_item, user, admin, category)
+          in: formData
+          name: contentType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    items:
+                      $ref: "#/definitions/imagecollection.ImageResponseDTO"
+                    type: array
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Upload Multiple Images to Cloudflare R2 and Save to DB
+      tags:
+        - Image Collection
+  /api/v1/images/upload/content/{contentId}:
+    put:
+      consumes:
+        - multipart/form-data
+      description:
+        Upload a single image file to Cloudflare R2 and upsert it for User,
+        Admin, or Category
+      parameters:
+        - description: Content ID (e.g. User ID, Admin ID, Category ID)
+          in: path
+          name: contentId
+          required: true
+          type: string
+        - description: "Avatar or Banner image file (field: 'file')"
+          in: formData
+          name: file
+          required: true
+          type: file
+        - description: Content Type (user, admin, category)
+          in: formData
+          name: contentType
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/imagecollection.ImageResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Upload & Replace Single Image (Avatar/Banner)
+      tags:
+        - Image Collection
+  /api/v1/product/categories:
+    post:
+      consumes:
+        - application/json
+      description: Only Admin and Super Admin can create product categories
+      parameters:
+        - description: Category Creation Payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/product.CreateCategoryDTO"
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/product.CategoryResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "409":
+          description: Conflict
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Create Product Category
+      tags:
+        - Product Category
+  /api/v1/product/categories/{id}:
+    delete:
+      description: Only Admin and Super Admin can delete product categories
+      parameters:
+        - description: Category ID (MongoDB-style ObjectID)
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Delete Product Category
+      tags:
+        - Product Category
+    get:
+      description: Retrieve a single category by its MongoDB-style ID
+      parameters:
+        - description: Category ID (MongoDB-style ObjectID)
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/product.CategoryResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      summary: Get Product Category by ID
+      tags:
+        - Product Category
+    put:
+      consumes:
+        - application/json
+      description: Only Admin and Super Admin can update product categories
+      parameters:
+        - description: Category ID (MongoDB-style ObjectID)
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Category Update Payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/product.UpdateCategoryDTO"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/product.CategoryResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "409":
+          description: Conflict
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Update Product Category
+      tags:
+        - Product Category
+  /api/v1/product/categories/list:
+    get:
+      description: Retrieve list of all product categories
+      parameters:
+        - description: Search categories by name
+          in: query
+          name: search
+          type: string
+        - description: Filter categories by active status (true/false)
+          in: query
+          name: isActive
+          type: boolean
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    items:
+                      $ref: "#/definitions/product.CategoryResponseDTO"
+                    type: array
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      summary: Get All Product Categories
+      tags:
+        - Product Category
+  /api/v1/product/items:
+    get:
+      description:
+        Retrieve list of all product items (optional category filter via
+        ?categoryId=...)
+      parameters:
+        - description: Filter items by category ID
+          in: query
+          name: categoryId
+          type: string
+        - description: Search items by product name
+          in: query
+          name: search
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    items:
+                      $ref: "#/definitions/productitems.ProductItemResponseDTO"
+                    type: array
+                type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      summary: Get All Product Items
+      tags:
+        - Product Item
+    post:
+      consumes:
+        - multipart/form-data
+        - application/json
+      description:
+        Create a new product item linked to a category with direct image
+        upload to Cloudflare R2
+      parameters:
+        - description: Category ID
+          in: formData
+          name: categoryId
+          required: true
+          type: string
+        - description: Product Name
+          in: formData
+          name: name
+          required: true
+          type: string
+        - description: Product Description
+          in: formData
+          name: description
+          type: string
+        - description: Product Offer Price (required selling price)
+          in: formData
+          name: offerPrice
+          required: true
+          type: number
+        - description: Product Base Price (optional regular/original price)
+          in: formData
+          name: basePrice
+          type: number
+        - description: Stock Quantity
+          in: formData
+          name: stock
+          type: integer
+        - collectionFormat: multi
+          description: Product Color IDs (array or comma-separated, e.g. 65287f33a105f9cb2467d12a)
+          in: formData
+          items:
+            type: string
+          name: colors
+          required: true
+          type: array
+        - description: Is Active (true/false)
+          in: formData
+          name: isActive
+          type: boolean
+        - description: Product Images (upload single or multiple files)
+          in: formData
+          name: images
+          type: file
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/productitems.ProductItemResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Create Product Item (Form-data with Image Upload or JSON)
+      tags:
+        - Product Item
+  /api/v1/product/items/{id}:
+    delete:
+      description: Only Admin and Super Admin can delete product items
+      parameters:
+        - description: Product Item ID (24-character hex ID)
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Delete Product Item
+      tags:
+        - Product Item
+    get:
+      description:
+        Retrieve a single product item by its ID with populated category
+        details
+      parameters:
+        - description: Product Item ID (24-character hex ID)
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/productitems.ProductItemResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      summary: Get Product Item by ID
+      tags:
+        - Product Item
+    put:
+      consumes:
+        - multipart/form-data
+        - application/json
+      description:
+        Update an existing product item and optionally upload new images
+        to Cloudflare R2
+      parameters:
+        - description: Product Item ID (24-character hex ID)
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Category ID
+          in: formData
+          name: categoryId
+          type: string
+        - description: Product Name
+          in: formData
+          name: name
+          type: string
+        - description: Product Description
+          in: formData
+          name: description
+          type: string
+        - description: Product Offer Price
+          in: formData
+          name: offerPrice
+          type: number
+        - description: Product Base Price
+          in: formData
+          name: basePrice
+          type: number
+        - description: Stock Quantity
+          in: formData
+          name: stock
+          type: integer
+        - collectionFormat: multi
+          description: Product Color IDs (array or comma-separated, e.g. 65287f33a105f9cb2467d12a)
+          in: formData
+          items:
+            type: string
+          name: colors
+          required: true
+          type: array
+        - description: Is Active (true/false)
+          in: formData
+          name: isActive
+          type: boolean
+        - description: Product Images (upload single or multiple files)
+          in: formData
+          name: images
+          type: file
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/productitems.ProductItemResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Update Product Item (Form-data with Image Upload or JSON)
+      tags:
+        - Product Item
+  /api/v1/product/items/category/{categoryId}:
+    get:
+      description: Retrieve all product items belonging to a specific category
+      parameters:
+        - description: Category ID
+          in: path
+          name: categoryId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    items:
+                      $ref: "#/definitions/productitems.ProductItemResponseDTO"
+                    type: array
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      summary: Get Product Items by Category ID
+      tags:
+        - Product Item
+  /api/v1/user/admin/create:
+    post:
+      consumes:
+        - application/json
+      description: Register a new admin (with bcrypt password hashing)
+      parameters:
+        - description: Admin creation payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/admin.CreateAdminDTO"
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/admin.AdminResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "409":
+          description: Conflict
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      summary: Create New Admin
+      tags:
+        - Admin Auth
+  /api/v1/user/admin/login:
+    post:
+      consumes:
+        - application/json
+      description: Authenticate admin with email/phone and password, returning JWT
+      parameters:
+        - description: Admin login credentials
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/admin.AdminLoginDTO"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/admin.AdminLoginResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      summary: Admin Login
+      tags:
+        - Admin Auth
+  /api/v1/user/admin/me:
+    get:
+      description: Retrieve profile of currently authenticated admin via /me
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/admin.AdminResponseDTO"
+                type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Get Admin Profile (Alias)
+      tags:
+        - Admin Auth
+  /api/v1/user/admin/profile:
+    get:
+      description: Retrieve profile of currently authenticated admin
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/admin.AdminResponseDTO"
+                type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Get Admin Profile
+      tags:
+        - Admin Auth
+  /api/v1/user/client/{id}:
+    delete:
+      description: Permanently remove a client record
+      parameters:
+        - description: Client ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Delete Client by ID (Admin Only)
+      tags:
+        - Client Management (Admin)
+    get:
+      description: Retrieve details of a single client by their ID
+      parameters:
+        - description: Client ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/client.ClientResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Get Client by ID (Admin Only)
+      tags:
+        - Client Management (Admin)
+    put:
+      consumes:
+        - application/json
+      description: Admin update of any client's details and active status
+      parameters:
+        - description: Client ID
+          in: path
+          name: id
+          required: true
+          type: integer
+        - description: Client Update Payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/client.UpdateClientDTO"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/client.ClientResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Update Client by ID (Admin Only)
+      tags:
+        - Client Management (Admin)
+  /api/v1/user/client/all:
+    get:
+      description:
+        Retrieve a list of all registered clients with optional search
+        keyword
+      parameters:
+        - description: Search keyword for name, email, phone, reference code, or district
+          in: query
+          name: search
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    items:
+                      $ref: "#/definitions/client.ClientResponseDTO"
+                    type: array
+                type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Get All Clients (Admin Only)
+      tags:
+        - Client Management (Admin)
+  /api/v1/user/client/change-password:
+    post:
+      consumes:
+        - application/json
+      description: Update password for the currently authenticated client
+      parameters:
+        - description: Change Password Payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/client.ChangePasswordDTO"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Change Password
+      tags:
+        - Client Profile
+  /api/v1/user/client/forgot-password:
+    post:
+      consumes:
+        - application/json
+      description:
+        Check if an account exists for password reset by email or phone
+        number
+      parameters:
+        - description: Forgot Password Payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/client.ForgotPasswordDTO"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      summary: Forgot Password Verification
+      tags:
+        - Client Auth
+  /api/v1/user/client/login:
+    post:
+      consumes:
+        - application/json
+      description:
+        Authenticate a client using email or phone number and password,
+        returning a JWT token
+      parameters:
+        - description: Client Login Payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/client.ClientLoginDTO"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/client.ClientLoginResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "403":
+          description: Forbidden
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      summary: Client Login
+      tags:
+        - Client Auth
+  /api/v1/user/client/me:
+    get:
+      description: Retrieve the authenticated client's own profile via /me
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/client.ClientResponseDTO"
+                type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Get Current Client Profile (Alias)
+      tags:
+        - Client Profile
+  /api/v1/user/client/profile:
+    get:
+      description: Retrieve the authenticated client's own profile
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/client.ClientResponseDTO"
+                type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Get Current Client Profile
+      tags:
+        - Client Profile
+    put:
+      consumes:
+        - application/json
+      description:
+        Update profile and address details of the currently authenticated
+        client
+      parameters:
+        - description: Client Update Payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/client.UpdateClientDTO"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/client.ClientResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      security:
+        - BearerAuth: []
+      summary: Update Current Client Profile
+      tags:
+        - Client Profile
+  /api/v1/user/client/register:
+    post:
+      consumes:
+        - application/json
+      description:
+        Register a new customer account using email or phone number with
+        address and profile details
+      parameters:
+        - description: Client Registration Payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/client.ClientRegisterDTO"
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+              - $ref: "#/definitions/response.APIResponse"
+              - properties:
+                  data:
+                    $ref: "#/definitions/client.ClientLoginResponseDTO"
+                type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "409":
+          description: Conflict
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      summary: Client Registration
+      tags:
+        - Client Auth
+  /api/v1/user/client/reset-password:
+    post:
+      consumes:
+        - application/json
+      description: Reset client password using email or phone identifier
+      parameters:
+        - description: Reset Password Payload
+          in: body
+          name: request
+          required: true
+          schema:
+            $ref: "#/definitions/client.ResetPasswordDTO"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/response.APIResponse"
+      summary: Reset Password
+      tags:
+        - Client Auth
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token (e.g. "Bearer eyJhbGciOi...")
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

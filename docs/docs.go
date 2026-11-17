@@ -9,62 +9,20 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "email": "support@example.coms"
-        },
-        "license": {
-            "name": "MIT",
-            "url": "https://opensource.org/licenses/MIT"
-        },
+        "contact": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/users": {
-            "get": {
-                "description": "Retrieve a list of all registered users",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get all users",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/response.APIResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/user.User"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/response.APIResponse"
-                        }
-                    }
-                }
-            },
+        "/api/v1/colors": {
             "post": {
-                "description": "Create a new user with name and email",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Only Admin and Super Admin can create colors",
                 "consumes": [
                     "application/json"
                 ],
@@ -72,17 +30,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Colors"
                 ],
-                "summary": "Create a new user",
+                "summary": "Create Product Color",
                 "parameters": [
                     {
-                        "description": "Create User Request",
+                        "description": "Color Creation Payload",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.CreateUserRequest"
+                            "$ref": "#/definitions/colors.CreateColorDTO"
                         }
                     }
                 ],
@@ -98,7 +56,562 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/user.User"
+                                            "$ref": "#/definitions/colors.ColorResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/colors/list": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Only Admin and Super Admin can retrieve list of all colors",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Colors"
+                ],
+                "summary": "Get All Product Colors",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search colors by name or color code",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Filter colors by active status (true/false)",
+                        "name": "isActive",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number (defaults to 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items per page (defaults to 0 / all)",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "list": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/definitions/colors.ColorResponseDTO"
+                                                    }
+                                                },
+                                                "total_count": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/colors/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Only Admin and Super Admin can retrieve a single color by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Colors"
+                ],
+                "summary": "Get Product Color by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Color ID (MongoDB-style ObjectID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/colors.ColorResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Only Admin and Super Admin can update colors",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Colors"
+                ],
+                "summary": "Update Product Color",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Color ID (MongoDB-style ObjectID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Color Update Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/colors.UpdateColorDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/colors.ColorResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Only Admin and Super Admin can delete colors",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Colors"
+                ],
+                "summary": "Delete Product Color",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Color ID (MongoDB-style ObjectID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/images": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Associate an image URL with any content ID (User, Admin, ProductItem, Category)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Image Collection"
+                ],
+                "summary": "Add Single Image to Content",
+                "parameters": [
+                    {
+                        "description": "Create Image Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/imagecollection.CreateImageDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/imagecollection.ImageResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/images/bulk": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Associate an array of image URLs with a content ID (Admin and SuperAdmin)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Image Collection"
+                ],
+                "summary": "Add Multiple Images to Content",
+                "parameters": [
+                    {
+                        "description": "Bulk Images Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/imagecollection.CreateBulkImagesDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/imagecollection.ImageResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/images/content/{contentId}": {
+            "get": {
+                "description": "Retrieve all image URLs associated with a content ID (supports ?contentType= filter)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Image Collection"
+                ],
+                "summary": "Get Images by Content ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Content ID (e.g. User ID, Product Item ID)",
+                        "name": "contentId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by Content Type (e.g. user, admin, product_item)",
+                        "name": "contentType",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/imagecollection.ImageResponseDTO"
+                                            }
                                         }
                                     }
                                 }
@@ -118,22 +631,664 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/users/{id}": {
-            "get": {
-                "description": "Retrieve single user details by their ID",
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Set or update single image for any content (User avatar, Admin avatar, Category banner)",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Image Collection"
                 ],
-                "summary": "Get user by ID",
+                "summary": "Set or Update Single Image (Avatar/Banner)",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Content ID (e.g. User ID, Admin ID, Category ID)",
+                        "name": "contentId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Upsert Image Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/imagecollection.UpsertSingleImageDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/imagecollection.ImageResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/images/upload": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload a multipart file to Cloudflare R2 bucket, then store the resulting URL in ImageCollection",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Image Collection"
+                ],
+                "summary": "Upload Single Image to Cloudflare R2 and Save to DB",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Image File to upload",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Content ID (e.g. ProductItem ID, User ID, Category ID)",
+                        "name": "contentId",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Content Type (product_item, user, admin, category)",
+                        "name": "contentType",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Mark as Primary Image",
+                        "name": "isPrimary",
+                        "in": "formData"
+                    },
+                    {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "Display Sort Order",
+                        "name": "sortOrder",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/imagecollection.ImageResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/images/upload/bulk": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload multiple multipart files to Cloudflare R2 bucket and store all resulting URLs in ImageCollection",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Image Collection"
+                ],
+                "summary": "Upload Multiple Images to Cloudflare R2 and Save to DB",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Multiple Image Files (field name: 'files')",
+                        "name": "files",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Content ID (e.g. ProductItem ID)",
+                        "name": "contentId",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Content Type (product_item, user, admin, category)",
+                        "name": "contentType",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/imagecollection.ImageResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/images/upload/content/{contentId}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload a single image file to Cloudflare R2 and upsert it for User, Admin, or Category",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Image Collection"
+                ],
+                "summary": "Upload \u0026 Replace Single Image (Avatar/Banner)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Content ID (e.g. User ID, Admin ID, Category ID)",
+                        "name": "contentId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Avatar or Banner image file (field: 'file')",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Content Type (user, admin, category)",
+                        "name": "contentType",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/imagecollection.ImageResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/images/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update an existing image record (URL, sort order, primary status)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Image Collection"
+                ],
+                "summary": "Update Image by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Image ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update Image Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/imagecollection.UpdateImageDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/imagecollection.ImageResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete a specific image entry by its ID (Admin and SuperAdmin)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Image Collection"
+                ],
+                "summary": "Delete Image by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Image ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/product/categories": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Only Admin and Super Admin can create product categories",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product Category"
+                ],
+                "summary": "Create Product Category",
+                "parameters": [
+                    {
+                        "description": "Category Creation Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/product.CreateCategoryDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/product.CategoryResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/product/categories/list": {
+            "get": {
+                "description": "Retrieve list of all product categories",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product Category"
+                ],
+                "summary": "Get All Product Categories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search categories by name",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Filter categories by active status (true/false)",
+                        "name": "isActive",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/product.CategoryResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/product/categories/{id}": {
+            "get": {
+                "description": "Retrieve a single category by its MongoDB-style ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product Category"
+                ],
+                "summary": "Get Product Category by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID (MongoDB-style ObjectID)",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -151,7 +1306,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/user.User"
+                                            "$ref": "#/definitions/product.CategoryResponseDTO"
                                         }
                                     }
                                 }
@@ -179,7 +1334,12 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update existing user details by ID",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Only Admin and Super Admin can update product categories",
                 "consumes": [
                     "application/json"
                 ],
@@ -187,24 +1347,24 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Product Category"
                 ],
-                "summary": "Update user by ID",
+                "summary": "Update Product Category",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "User ID",
+                        "type": "string",
+                        "description": "Category ID (MongoDB-style ObjectID)",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Update User Request",
+                        "description": "Category Update Payload",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/user.UpdateUserRequest"
+                            "$ref": "#/definitions/product.UpdateCategoryDTO"
                         }
                     }
                 ],
@@ -220,7 +1380,396 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/user.User"
+                                            "$ref": "#/definitions/product.CategoryResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Only Admin and Super Admin can delete product categories",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product Category"
+                ],
+                "summary": "Delete Product Category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID (MongoDB-style ObjectID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/product/items": {
+            "get": {
+                "description": "Retrieve list of all product items (optional category filter via ?categoryId=...)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product Item"
+                ],
+                "summary": "Get All Product Items",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter items by category ID",
+                        "name": "categoryId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search items by product name",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/productitems.ProductItemResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Create a new product item linked to a category with direct image upload to Cloudflare R2",
+                "consumes": [
+                    "multipart/form-data",
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product Item"
+                ],
+                "summary": "Create Product Item (Form-data with Image Upload or JSON)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "categoryId",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Product Name",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Product Description",
+                        "name": "description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Product Offer Price (required selling price)",
+                        "name": "offerPrice",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "Product Base Price (optional regular/original price)",
+                        "name": "basePrice",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Stock Quantity",
+                        "name": "stock",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "Product Color IDs (array or comma-separated, e.g. 65287f33a105f9cb2467d12a)",
+                        "name": "colors",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Is Active (true/false)",
+                        "name": "isActive",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Product Images (upload single or multiple files)",
+                        "name": "images",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/productitems.ProductItemResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/product/items/category/{categoryId}": {
+            "get": {
+                "description": "Retrieve all product items belonging to a specific category",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product Item"
+                ],
+                "summary": "Get Product Items by Category ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "categoryId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/productitems.ProductItemResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/product/items/{id}": {
+            "get": {
+                "description": "Retrieve a single product item by its ID with populated category details",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product Item"
+                ],
+                "summary": "Get Product Item by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Product Item ID (24-character hex ID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/productitems.ProductItemResponseDTO"
                                         }
                                     }
                                 }
@@ -247,22 +1796,565 @@ const docTemplate = `{
                     }
                 }
             },
-            "delete": {
-                "description": "Remove user from database by ID",
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update an existing product item and optionally upload new images to Cloudflare R2",
+                "consumes": [
+                    "multipart/form-data",
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "Product Item"
                 ],
-                "summary": "Delete user by ID",
+                "summary": "Update Product Item (Form-data with Image Upload or JSON)",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "User ID",
+                        "type": "string",
+                        "description": "Product Item ID (24-character hex ID)",
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "categoryId",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Product Name",
+                        "name": "name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Product Description",
+                        "name": "description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Product Offer Price",
+                        "name": "offerPrice",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Product Base Price",
+                        "name": "basePrice",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Stock Quantity",
+                        "name": "stock",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "Product Color IDs (array or comma-separated, e.g. 65287f33a105f9cb2467d12a)",
+                        "name": "colors",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Is Active (true/false)",
+                        "name": "isActive",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "Product Images (upload single or multiple files)",
+                        "name": "images",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/productitems.ProductItemResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Only Admin and Super Admin can delete product items",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product Item"
+                ],
+                "summary": "Delete Product Item",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Product Item ID (24-character hex ID)",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/admin/create": {
+            "post": {
+                "description": "Register a new admin (with bcrypt password hashing)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Auth"
+                ],
+                "summary": "Create New Admin",
+                "parameters": [
+                    {
+                        "description": "Admin creation payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.CreateAdminDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/admin.AdminResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/admin/login": {
+            "post": {
+                "description": "Authenticate admin with email/phone and password, returning JWT",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Auth"
+                ],
+                "summary": "Admin Login",
+                "parameters": [
+                    {
+                        "description": "Admin login credentials",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/admin.AdminLoginDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/admin.AdminLoginResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/admin/me": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve profile of currently authenticated admin via /me",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Auth"
+                ],
+                "summary": "Get Admin Profile (Alias)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/admin.AdminResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/admin/profile": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve profile of currently authenticated admin",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Admin Auth"
+                ],
+                "summary": "Get Admin Profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/admin.AdminResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/client/all": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve a list of all registered clients with optional search keyword",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client Management (Admin)"
+                ],
+                "summary": "Get All Clients (Admin Only)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search keyword for name, email, phone, reference code, or district",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/client.ClientResponseDTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/client/change-password": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update password for the currently authenticated client",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client Profile"
+                ],
+                "summary": "Change Password",
+                "parameters": [
+                    {
+                        "description": "Change Password Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/client.ChangePasswordDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/client/forgot-password": {
+            "post": {
+                "description": "Check if an account exists for password reset by email or phone number",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client Auth"
+                ],
+                "summary": "Forgot Password Verification",
+                "parameters": [
+                    {
+                        "description": "Forgot Password Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/client.ForgotPasswordDTO"
+                        }
                     }
                 ],
                 "responses": {
@@ -283,6 +2375,293 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/response.APIResponse"
                         }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/client/login": {
+            "post": {
+                "description": "Authenticate a client using email or phone number and password, returning a JWT token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client Auth"
+                ],
+                "summary": "Client Login",
+                "parameters": [
+                    {
+                        "description": "Client Login Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/client.ClientLoginDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/client.ClientLoginResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/client/me": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve the authenticated client's own profile via /me",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client Profile"
+                ],
+                "summary": "Get Current Client Profile (Alias)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/client.ClientResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/client/profile": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve the authenticated client's own profile",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client Profile"
+                ],
+                "summary": "Get Current Client Profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/client.ClientResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update profile and address details of the currently authenticated client",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client Profile"
+                ],
+                "summary": "Update Current Client Profile",
+                "parameters": [
+                    {
+                        "description": "Client Update Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/client.UpdateClientDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/client.ClientResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/client/register": {
+            "post": {
+                "description": "Register a new customer account using email or phone number with address and profile details",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client Auth"
+                ],
+                "summary": "Client Registration",
+                "parameters": [
+                    {
+                        "description": "Client Registration Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/client.ClientRegisterDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/client.ClientLoginResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
                     },
                     "500": {
                         "description": "Internal Server Error",
@@ -292,9 +2671,1080 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/user/client/reset-password": {
+            "post": {
+                "description": "Reset client password using email or phone identifier",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client Auth"
+                ],
+                "summary": "Reset Password",
+                "parameters": [
+                    {
+                        "description": "Reset Password Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/client.ResetPasswordDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/client/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve details of a single client by their ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client Management (Admin)"
+                ],
+                "summary": "Get Client by ID (Admin Only)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Client ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/client.ClientResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Admin update of any client's details and active status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client Management (Admin)"
+                ],
+                "summary": "Update Client by ID (Admin Only)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Client ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Client Update Payload",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/client.UpdateClientDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.APIResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/client.ClientResponseDTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Permanently remove a client record",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Client Management (Admin)"
+                ],
+                "summary": "Delete Client by ID (Admin Only)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Client ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.APIResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "admin.AdminLoginDTO": {
+            "type": "object",
+            "required": [
+                "emailOrPhone",
+                "password"
+            ],
+            "properties": {
+                "emailOrPhone": {
+                    "type": "string",
+                    "example": "muksitul44@gmail.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
+        "admin.AdminLoginResponseDTO": {
+            "type": "object",
+            "properties": {
+                "admin": {
+                    "$ref": "#/definitions/admin.AdminResponseDTO"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "admin.AdminResponseDTO": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "phoneNumber": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/role.Type"
+                }
+            }
+        },
+        "admin.CreateAdminDTO": {
+            "type": "object",
+            "required": [
+                "email",
+                "firstName",
+                "lastName",
+                "password",
+                "phoneNumber",
+                "role"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "Kishoreganj"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "muksitul44@gmail.com"
+                },
+                "firstName": {
+                    "type": "string",
+                    "example": "Muksitul"
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Islam"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6,
+                    "example": "123456"
+                },
+                "phoneNumber": {
+                    "type": "string",
+                    "example": "01617182171"
+                },
+                "role": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/role.Type"
+                        }
+                    ],
+                    "example": "super_admin"
+                }
+            }
+        },
+        "client.ChangePasswordDTO": {
+            "type": "object",
+            "required": [
+                "newPassword",
+                "oldPassword"
+            ],
+            "properties": {
+                "newPassword": {
+                    "type": "string",
+                    "minLength": 6,
+                    "example": "newsecret123"
+                },
+                "oldPassword": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
+        "client.ClientLoginDTO": {
+            "type": "object",
+            "required": [
+                "emailOrPhone",
+                "password"
+            ],
+            "properties": {
+                "emailOrPhone": {
+                    "type": "string",
+                    "example": "01712345678"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
+        "client.ClientLoginResponseDTO": {
+            "type": "object",
+            "properties": {
+                "client": {
+                    "$ref": "#/definitions/client.ClientResponseDTO"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "client.ClientRegisterDTO": {
+            "type": "object",
+            "required": [
+                "firstName",
+                "lastName",
+                "password"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "House 14, Road 5, Block C"
+                },
+                "area": {
+                    "type": "string",
+                    "example": "Mirpur 10"
+                },
+                "district": {
+                    "type": "string",
+                    "example": "Dhaka"
+                },
+                "division": {
+                    "type": "string",
+                    "example": "Dhaka"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "rahim@example.com"
+                },
+                "firstName": {
+                    "type": "string",
+                    "example": "Rahim"
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Uddin"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 6,
+                    "example": "123456"
+                },
+                "phoneNumber": {
+                    "type": "string",
+                    "example": "01712345678"
+                },
+                "postOffice": {
+                    "type": "string",
+                    "example": "Mirpur"
+                },
+                "profileImage": {
+                    "type": "string",
+                    "example": "https://example.com/avatar.jpg"
+                },
+                "referenceCode": {
+                    "type": "string",
+                    "example": "REF9876"
+                },
+                "thana": {
+                    "type": "string",
+                    "example": "Mirpur"
+                },
+                "zipCode": {
+                    "type": "string",
+                    "example": "1216"
+                }
+            }
+        },
+        "client.ClientResponseDTO": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "House 14, Road 5, Block C"
+                },
+                "area": {
+                    "type": "string",
+                    "example": "Mirpur 10"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "district": {
+                    "type": "string",
+                    "example": "Dhaka"
+                },
+                "division": {
+                    "type": "string",
+                    "example": "Dhaka"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "rahim@example.com"
+                },
+                "firstName": {
+                    "type": "string",
+                    "example": "Rahim"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Uddin"
+                },
+                "phoneNumber": {
+                    "type": "string",
+                    "example": "01712345678"
+                },
+                "postOffice": {
+                    "type": "string",
+                    "example": "Mirpur"
+                },
+                "profileImage": {
+                    "type": "string",
+                    "example": "https://example.com/avatar.jpg"
+                },
+                "referenceCode": {
+                    "type": "string",
+                    "example": "REF9876"
+                },
+                "role": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/role.Type"
+                        }
+                    ],
+                    "example": "client"
+                },
+                "thana": {
+                    "type": "string",
+                    "example": "Mirpur"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "zipCode": {
+                    "type": "string",
+                    "example": "1216"
+                }
+            }
+        },
+        "client.ForgotPasswordDTO": {
+            "type": "object",
+            "required": [
+                "emailOrPhone"
+            ],
+            "properties": {
+                "emailOrPhone": {
+                    "type": "string",
+                    "example": "01712345678"
+                }
+            }
+        },
+        "client.ResetPasswordDTO": {
+            "type": "object",
+            "required": [
+                "emailOrPhone",
+                "newPassword"
+            ],
+            "properties": {
+                "emailOrPhone": {
+                    "type": "string",
+                    "example": "01712345678"
+                },
+                "newPassword": {
+                    "type": "string",
+                    "minLength": 6,
+                    "example": "newsecret123"
+                }
+            }
+        },
+        "client.UpdateClientDTO": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "Road 103, House 25"
+                },
+                "area": {
+                    "type": "string",
+                    "example": "Gulshan 2"
+                },
+                "district": {
+                    "type": "string",
+                    "example": "Dhaka"
+                },
+                "division": {
+                    "type": "string",
+                    "example": "Dhaka"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "rahim.new@example.com"
+                },
+                "firstName": {
+                    "type": "string",
+                    "example": "Rahim"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "lastName": {
+                    "type": "string",
+                    "example": "Chowdhury"
+                },
+                "phoneNumber": {
+                    "type": "string",
+                    "example": "01712345678"
+                },
+                "postOffice": {
+                    "type": "string",
+                    "example": "Gulshan"
+                },
+                "profileImage": {
+                    "type": "string",
+                    "example": "https://example.com/avatar_new.jpg"
+                },
+                "referenceCode": {
+                    "type": "string",
+                    "example": "REF9876"
+                },
+                "thana": {
+                    "type": "string",
+                    "example": "Gulshan"
+                },
+                "zipCode": {
+                    "type": "string",
+                    "example": "1212"
+                }
+            }
+        },
+        "colors.ColorResponseDTO": {
+            "type": "object",
+            "properties": {
+                "colorCode": {
+                    "type": "string",
+                    "example": "#FF0000"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "65287f33a105f9cb2467d12a"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Red"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "colors.CreateColorDTO": {
+            "type": "object",
+            "required": [
+                "colorCode",
+                "name"
+            ],
+            "properties": {
+                "colorCode": {
+                    "type": "string",
+                    "example": "#FF0000"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Red"
+                }
+            }
+        },
+        "colors.UpdateColorDTO": {
+            "type": "object",
+            "properties": {
+                "colorCode": {
+                    "type": "string",
+                    "example": "#8B0000"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Dark Red"
+                }
+            }
+        },
+        "imagecollection.CreateBulkImagesDTO": {
+            "type": "object",
+            "required": [
+                "contentId",
+                "contentType",
+                "imageUrls"
+            ],
+            "properties": {
+                "contentId": {
+                    "type": "string",
+                    "example": "65287f33a105f9cb2467d12b"
+                },
+                "contentType": {
+                    "type": "string",
+                    "example": "product_item"
+                },
+                "imageUrls": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "https://example.com/img1.jpg"
+                    ]
+                }
+            }
+        },
+        "imagecollection.CreateImageDTO": {
+            "type": "object",
+            "required": [
+                "contentId",
+                "contentType",
+                "imageUrl"
+            ],
+            "properties": {
+                "contentId": {
+                    "type": "string",
+                    "example": "65287f33a105f9cb2467d12b"
+                },
+                "contentType": {
+                    "type": "string",
+                    "example": "user"
+                },
+                "imageUrl": {
+                    "type": "string",
+                    "example": "https://example.com/images/avatar.jpg"
+                },
+                "isPrimary": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "sortOrder": {
+                    "type": "integer",
+                    "example": 0
+                }
+            }
+        },
+        "imagecollection.ImageResponseDTO": {
+            "type": "object",
+            "properties": {
+                "contentId": {
+                    "type": "string",
+                    "example": "65287f33a105f9cb2467d12b"
+                },
+                "contentType": {
+                    "type": "string",
+                    "example": "user"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "670c5e7b8a1c9f2d3e4b5a6c"
+                },
+                "imageUrl": {
+                    "type": "string",
+                    "example": "https://example.com/images/avatar.jpg"
+                },
+                "isPrimary": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "sortOrder": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "imagecollection.UpdateImageDTO": {
+            "type": "object",
+            "properties": {
+                "contentType": {
+                    "type": "string",
+                    "example": "user"
+                },
+                "imageUrl": {
+                    "type": "string",
+                    "example": "https://example.com/images/updated-avatar.jpg"
+                },
+                "isPrimary": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "sortOrder": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "imagecollection.UpsertSingleImageDTO": {
+            "type": "object",
+            "required": [
+                "contentType",
+                "imageUrl"
+            ],
+            "properties": {
+                "contentType": {
+                    "type": "string",
+                    "example": "user"
+                },
+                "imageUrl": {
+                    "type": "string",
+                    "example": "https://example.com/images/avatar.jpg"
+                }
+            }
+        },
+        "product.CategoryResponseDTO": {
+            "type": "object",
+            "properties": {
+                "browseName": {
+                    "type": "string",
+                    "example": "Raw \u0026 Roasted Nuts"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "All kinds of premium nuts, seeds and dried fruits"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "65287f33a105f9cb2467d12a"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Nuts \u0026 Seeds"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "product.CreateCategoryDTO": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "browseName": {
+                    "type": "string",
+                    "example": "Raw \u0026 Roasted Nuts"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "All kinds of premium nuts, seeds and dried fruits"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Nuts \u0026 Seeds"
+                }
+            }
+        },
+        "product.UpdateCategoryDTO": {
+            "type": "object",
+            "properties": {
+                "browseName": {
+                    "type": "string",
+                    "example": "Fresh Organic Nuts"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Freshly harvested premium organic nuts"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Organic Nuts \u0026 Seeds"
+                }
+            }
+        },
+        "productitems.ProductItemColorResponseDTO": {
+            "type": "object",
+            "properties": {
+                "colorCode": {
+                    "type": "string",
+                    "example": "#FF0000"
+                },
+                "colorId": {
+                    "type": "string",
+                    "example": "65287f33a105f9cb2467d12a"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "65287f33a105f9cb2467d12a"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Red"
+                },
+                "stock": {
+                    "type": "integer",
+                    "example": 10
+                }
+            }
+        },
+        "productitems.ProductItemResponseDTO": {
+            "type": "object",
+            "properties": {
+                "basePrice": {
+                    "type": "number",
+                    "example": 18.99
+                },
+                "category": {
+                    "$ref": "#/definitions/product.CategoryResponseDTO"
+                },
+                "categoryId": {
+                    "type": "string",
+                    "example": "65287f33a105f9cb2467d12a"
+                },
+                "colorStocks": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/productitems.ProductItemColorResponseDTO"
+                    }
+                },
+                "colors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/productitems.ProductItemColorResponseDTO"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Freshly harvested premium California almonds"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "65287f33a105f9cb2467d12b"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/imagecollection.ImageResponseDTO"
+                    }
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "example": "California Almonds 500g"
+                },
+                "offerPrice": {
+                    "type": "number",
+                    "example": 14.99
+                },
+                "sizes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/productitems.ProductItemSizeResponseDTO"
+                    }
+                },
+                "stock": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "variants": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/productitems.ProductItemVariantResponseDTO"
+                    }
+                }
+            }
+        },
+        "productitems.ProductItemSizeResponseDTO": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "M"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "65287f33a105f9cb2467d12a"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Medium"
+                },
+                "sizeId": {
+                    "type": "string",
+                    "example": "65287f33a105f9cb2467d12a"
+                },
+                "sortOrder": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "stock": {
+                    "type": "integer",
+                    "example": 10
+                }
+            }
+        },
+        "productitems.ProductItemVariantResponseDTO": {
+            "type": "object",
+            "properties": {
+                "color": {
+                    "$ref": "#/definitions/colors.ColorResponseDTO"
+                },
+                "colorId": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "size": {
+                    "$ref": "#/definitions/sizes.SizeResponseDTO"
+                },
+                "sizeId": {
+                    "type": "string"
+                },
+                "stock": {
+                    "type": "integer"
+                }
+            }
+        },
         "response.APIResponse": {
             "type": "object",
             "properties": {
@@ -303,60 +3753,87 @@ const docTemplate = `{
                 "message": {
                     "type": "string"
                 },
+                "meta": {
+                    "$ref": "#/definitions/response.PaginationMeta"
+                },
+                "statusCode": {
+                    "type": "integer"
+                },
                 "success": {
                     "type": "boolean"
                 }
             }
         },
-        "user.CreateUserRequest": {
+        "response.PaginationMeta": {
             "type": "object",
-            "required": [
-                "email",
-                "name"
+            "properties": {
+                "limit": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                },
+                "totalPage": {
+                    "type": "integer"
+                }
+            }
+        },
+        "role.Type": {
+            "type": "string",
+            "enum": [
+                "super_admin",
+                "admin",
+                "support",
+                "client"
             ],
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
-                }
-            }
+            "x-enum-varnames": [
+                "SuperAdmin",
+                "Admin",
+                "Support",
+                "Client"
+            ]
         },
-        "user.UpdateUserRequest": {
+        "sizes.SizeResponseDTO": {
             "type": "object",
             "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "name": {
+                "code": {
                     "type": "string",
-                    "maxLength": 100,
-                    "minLength": 2
-                }
-            }
-        },
-        "user.User": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
+                    "example": "M"
                 },
-                "email": {
+                "createdAt": {
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "65287f33a105f9cb2467d12a"
+                },
+                "isActive": {
+                    "type": "boolean",
+                    "example": true
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Medium"
                 },
-                "updated_at": {
+                "sortOrder": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Type \"Bearer\" followed by a space and JWT token (e.g. \"Bearer eyJhbGciOi...\")",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
@@ -364,11 +3841,11 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
-	BasePath:         "/api/v1",
+	Host:             "",
+	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "Go Backend with PostgreSQL & GORM API",
-	Description:      "Production-ready RESTful API server built with Go, Gin, PostgreSQL, and GORM.",
+	Title:            "GO Lang Backend With GIn",
+	Description:      "Project Backend Set ",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
