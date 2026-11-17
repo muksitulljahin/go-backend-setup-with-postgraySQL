@@ -43,7 +43,7 @@ func SetupRouter(db *gorm.DB, cfg *config.AppConfig) *gin.Engine {
 	// Health check endpoint
 	r.GET("/health", func(c *gin.Context) {
 		response.Success(c, "Health check passed", gin.H{
-			"statusnuts-kids-backend-golan-with-postgraySQL": "UP",
+			"status": "UP",
 		})
 	})
 

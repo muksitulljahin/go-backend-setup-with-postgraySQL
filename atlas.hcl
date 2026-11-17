@@ -1,6 +1,6 @@
 variable "db_url" {
   type    = string
-  default = "postgres://postgres:postgres@localhost:5432/nuts_and_arts?sslmode=disable"
+  default = "postgres://postgres.jsbobmnbqgxhpnqqmdgm:q0ODCNyMbjGe0Wux@aws-0-ap-south-1.pooler.supabase.com:5432/biddaneer?sslmode=require"
 }
 
 data "external_schema" "gorm" {
